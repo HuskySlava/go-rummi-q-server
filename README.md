@@ -15,7 +15,7 @@ Using Go, create a server to handle a multiplayer tile-based number game inspire
    * Generate a game for lobby 
    * Keep state of the game
    * Handle turns
-   * Send state updates to frontend (WebSocket or gRPC)
+   * Send state updates to frontend WebSocket
    * Validate player moves 
    * Anti-Cheat 
 

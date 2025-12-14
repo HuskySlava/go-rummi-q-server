@@ -22,6 +22,23 @@ func (tiles Meld) isAscendingSeries() bool {
 	return true
 }
 
+func (tiles Meld) isUniqueColors() bool {
+
+	// Map of existing colors
+	seen := make(map[Color]bool)
+
+	for _, v := range tiles {
+		if v.Value != JokerValue {
+			if seen[v.Color] {
+				return false
+			}
+			seen[v.Color] = true
+		}
+	}
+
+	return true
+}
+
 func (tiles Meld) isGroup() bool {
 
 	// Validate length
@@ -49,14 +66,14 @@ func (tiles Meld) isGroup() bool {
 	}
 
 	// All tiles in a Meld group must be of the same value
-	for i := checkFromIndex; i < len(tiles); i++ { // Skip irrelevant indexes (jokers
-		if tiles[i].Value != expectedValue && tiles[i].Value != JokerValue {
+	for _, t := range tiles[checkFromIndex:] {
+		if t.Value != expectedValue && t.Value != JokerValue {
 			return false
 		}
 	}
 
 	// Proceed with color check
-	return true
+	return tiles.isUniqueColors()
 }
 
 func (tiles Meld) IsValid() bool {

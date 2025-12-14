@@ -3,7 +3,6 @@ package game
 type Meld []Tile
 
 const MinMeldLength = 3
-const JokerValue = 99
 
 func (tiles Meld) isAscendingSeries() bool {
 
@@ -14,7 +13,7 @@ func (tiles Meld) isAscendingSeries() bool {
 
 	// Meld series should be a series of consecutive numbers
 	for i := 0; i+1 < len(tiles); i++ {
-		isJoker := tiles[i].Value == JokerValue || tiles[i+1].Value == JokerValue
+		isJoker := tiles[i].IsJoker() || tiles[i+1].IsJoker()
 		if !isJoker && tiles[i].Value+1 != tiles[i+1].Value {
 			return false
 		}
@@ -28,7 +27,7 @@ func (tiles Meld) isUniqueColors() bool {
 	seen := make(map[Color]bool)
 
 	for _, v := range tiles {
-		if v.Value != JokerValue {
+		if !v.IsJoker() {
 			if seen[v.Color] {
 				return false
 			}
@@ -52,7 +51,7 @@ func (tiles Meld) isGroup() bool {
 	// Find first none Joker value and index in Meld
 	foundNoneJoker := false
 	for i, v := range tiles {
-		if v.Value != JokerValue {
+		if !v.IsJoker() {
 			expectedValue = v.Value
 			checkFromIndex = i
 			foundNoneJoker = true
@@ -67,7 +66,7 @@ func (tiles Meld) isGroup() bool {
 
 	// All tiles in a Meld group must be of the same value
 	for _, t := range tiles[checkFromIndex:] {
-		if t.Value != expectedValue && t.Value != JokerValue {
+		if t.Value != expectedValue && !t.IsJoker() {
 			return false
 		}
 	}

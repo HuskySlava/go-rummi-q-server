@@ -2,6 +2,8 @@ package game
 
 type Color string
 
+const JokerValue = 99
+
 const (
 	ColorRed    Color = "RED"
 	ColorBlue   Color = "BLUE"
@@ -22,4 +24,8 @@ func NewTile(color Color, value uint8) Tile {
 		Value: value,
 		Color: color,
 	}
+}
+
+func (t Tile) IsJoker() bool {
+	return t.Value == JokerValue
 }

@@ -22,6 +22,43 @@ func (tiles Meld) isAscendingSeries() bool {
 	return true
 }
 
+func (tiles Meld) isGroup() bool {
+
+	// Validate length
+	if len(tiles) < MinMeldLength {
+		return false
+	}
+
+	var expectedValue uint8
+	var checkFromIndex int
+
+	// Find first none Joker value and index in Meld
+	foundNoneJoker := false
+	for i, v := range tiles {
+		if v.Value != JokerValue {
+			expectedValue = v.Value
+			checkFromIndex = i
+			foundNoneJoker = true
+			break
+		}
+	}
+
+	// All jokers (Impossible on classic rules, future-proof for custom rules)
+	if !foundNoneJoker {
+		return true
+	}
+
+	// All tiles in a Meld group must be of the same value
+	for i := checkFromIndex; i < len(tiles); i++ { // Skip irrelevant indexes (jokers
+		if tiles[i].Value != expectedValue && tiles[i].Value != JokerValue {
+			return false
+		}
+	}
+
+	// Proceed with color check
+	return true
+}
+
 func (tiles Meld) IsValid() bool {
-	return tiles.isAscendingSeries()
+	return tiles.isAscendingSeries() || tiles.isGroup()
 }

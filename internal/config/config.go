@@ -7,8 +7,14 @@ import (
 	"path/filepath"
 )
 
+type HTTPConfig struct {
+	ListenHost string `yaml:"listen_host"`
+	ListenPort int    `yaml:"listen_port"`
+	Timeout    int    `yaml:"timeout"`
+}
+
 type Config struct {
-	HttpTimeoutSeconds int `yaml:"httpTimeoutSeconds"`
+	HTTPConfig HTTPConfig `yaml:"http_config"`
 }
 
 func Load() (*Config, error) {

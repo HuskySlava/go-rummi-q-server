@@ -1,2 +1,4 @@
-httpTimeoutSeconds: 30
-test: test
+http_config:
+  listen_host: ""
+  listen_port: 3000
+  timeout: 30

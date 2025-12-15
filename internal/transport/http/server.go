@@ -1,14 +1,28 @@
 package transport
 
 import (
-	"log"
+	"errors"
+	"go-rummi-q-server/internal/config"
 	"net/http"
+	"strconv"
+	"time"
 )
 
-func StartServer() {
+func StartServer(httpConfig config.HTTPConfig) error {
 	mux := NewRouter()
 
-	if err := http.ListenAndServe(":3001", mux); err != nil {
-		log.Printf("Server failed: %v", err)
+	addr := httpConfig.ListenHost + ":" + strconv.Itoa(httpConfig.ListenPort)
+
+	srv := &http.Server{
+		Addr:         addr,
+		Handler:      mux,
+		ReadTimeout:  time.Duration(httpConfig.Timeout) * time.Second,
+		WriteTimeout: time.Duration(httpConfig.Timeout) * time.Second,
 	}
+
+	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+
+	return nil
 }

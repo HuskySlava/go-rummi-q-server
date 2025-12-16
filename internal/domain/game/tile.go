@@ -1,5 +1,7 @@
 package game
 
+import "strconv"
+
 type Color string
 
 const JokerValue = 99
@@ -14,13 +16,13 @@ const (
 
 type Tile struct {
 	ID    string
-	Value uint8
+	Value int
 	Color Color
 }
 
-func NewTile(color Color, value uint8) Tile {
+func NewTile(color Color, value int) Tile {
 	return Tile{
-		ID:    string(color) + "-" + string(value),
+		ID:    string(color) + "-" + strconv.Itoa(value),
 		Value: value,
 		Color: color,
 	}

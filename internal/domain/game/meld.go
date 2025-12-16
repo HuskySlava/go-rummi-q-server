@@ -45,7 +45,7 @@ func (tiles Meld) isGroup() bool {
 		return false
 	}
 
-	var expectedValue uint8
+	var expectedValue int
 	var checkFromIndex int
 
 	// Find first none Joker value and index in Meld

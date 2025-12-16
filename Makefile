@@ -18,7 +18,12 @@ clean: time
 	rm -rf $(BIN_DIR)/*
 	mkdir -p $(BIN_DIR)
 
-build: time clean
+vet:
+	@echo "Running go vet..."
+	# Vet all packages except tmp
+	go vet $(shell go list ./... | grep -v '/tmp')
+
+build: time clean vet
 	@echo "Building $(BINARY_NAME)..."
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ${BINARY_NAME} ./cmd/
 
@@ -29,17 +34,17 @@ move: time build
 	cp $(CONFIG_FILE) $(BIN_DIR)/
 
 # Build for MacOS
-build-macos: time
+build-macos: time vet
 	@echo "Building $(BINARY_NAME) for MacOS/arm64..."
 	GOOS=darwin GOARCH=arm64 go build -o $(BINARY_NAME) ./cmd/
 
 # Build for Linux
-build-linux: time
+build-linux: time vet
 	@echo "Building $(BINARY_NAME) for linux/amd64..."
 	GOOS=linux GOARCH=amd64 go build -o $(BINARY_NAME) ./cmd/
 
 # Build for Windows
-build-windows: time
+build-windows: time vet
 	@echo "Building $(BINARY_NAME).exe for windows/amd64..."
 	GOOS=windows GOARCH=amd64 go build -o $(BINARY_NAME).exe ./cmd/
 

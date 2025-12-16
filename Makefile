@@ -28,6 +28,21 @@ move: time build
 	@echo "Moving config to $(BIN_DIR)..."
 	cp $(CONFIG_FILE) $(BIN_DIR)/
 
+# Build for MacOS
+build-macos: time
+	@echo "Building $(BINARY_NAME) for MacOS/arm64..."
+	GOOS=darwin GOARCH=arm64 go build -o $(BINARY_NAME) ./cmd/
+
+# Build for Linux
+build-linux: time
+	@echo "Building $(BINARY_NAME) for linux/amd64..."
+	GOOS=linux GOARCH=amd64 go build -o $(BINARY_NAME) ./cmd/
+
+# Build for Windows
+build-windows: time
+	@echo "Building $(BINARY_NAME).exe for windows/amd64..."
+	GOOS=windows GOARCH=amd64 go build -o $(BINARY_NAME).exe ./cmd/
+
 run: build
 	@echo "Running $(BINARY_NAME)..."
 	./$(BINARY_NAME)

@@ -27,9 +27,5 @@ func NewRouter() *http.ServeMux {
 		json.NewEncoder(w).Encode(resp)
 	})
 
-	mux.HandleFunc("/*", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Not Found", http.StatusNotFound)
-	})
-
 	return mux
 }

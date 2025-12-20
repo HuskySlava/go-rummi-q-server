@@ -50,12 +50,13 @@ func NewPlayer() *game.Player {
 	}
 }
 
-func GetLobby(id uuid.UUID) *Lobby {
+func LobbyExists(id uuid.UUID) bool {
 	// Block writing to lobbies while you read from it
 	lobbiesMu.RLock()
-	lobby := lobbies[id]
-	lobbiesMu.RUnlock()
-	return lobby
+	defer lobbiesMu.RUnlock()
+
+	_, ok := lobbies[id]
+	return ok
 }
 
 func PlayerJoin() {

@@ -53,6 +53,8 @@ func TerminateLobby(id uuid.UUID) {
 	lobbiesMu.Lock()
 	defer lobbiesMu.Unlock()
 	delete(lobbies, id)
+
+	// TODO: Signal lobby is terminated
 }
 
 func NewPlayer() *game.Player {

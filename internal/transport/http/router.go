@@ -20,7 +20,6 @@ func NewRouter() *http.ServeMux {
 	// Create new lobby
 	mux.HandleFunc("POST /lobbies", func(w http.ResponseWriter, r *http.Request) {
 		gameLobby := lobby.NewLobby()
-		fmt.Println(gameLobby)
 
 		resp := map[string]any{
 			"message": "Lobby Created",

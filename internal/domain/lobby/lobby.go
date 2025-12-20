@@ -23,3 +23,18 @@ func NewLobby() *Lobby {
 		IsGame:     false,
 	}
 }
+
+func NewPlayer() *game.Player {
+	return &game.Player{
+		ID:         0,
+		Name:       "",
+		WinAmount:  0,
+		LoseAmount: 0,
+		WinRate:    0,
+		Hand:       nil,
+	}
+}
+
+func PlayerJoin() {
+
+}

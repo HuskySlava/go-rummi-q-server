@@ -39,6 +39,22 @@ func NewLobby() *Lobby {
 	return lobby
 }
 
+func LobbyExists(id uuid.UUID) bool {
+	// Block writing to lobbies while you read from it
+	lobbiesMu.RLock()
+	defer lobbiesMu.RUnlock()
+
+	_, ok := lobbies[id]
+	return ok
+}
+
+func TerminateLobby(id uuid.UUID) {
+	// Block writing to lobbies while it is being deleted
+	lobbiesMu.Lock()
+	defer lobbiesMu.Unlock()
+	delete(lobbies, id)
+}
+
 func NewPlayer() *game.Player {
 	return &game.Player{
 		ID:         0,
@@ -48,15 +64,6 @@ func NewPlayer() *game.Player {
 		WinRate:    0,
 		Hand:       nil,
 	}
-}
-
-func LobbyExists(id uuid.UUID) bool {
-	// Block writing to lobbies while you read from it
-	lobbiesMu.RLock()
-	defer lobbiesMu.RUnlock()
-
-	_, ok := lobbies[id]
-	return ok
 }
 
 func PlayerJoin() {

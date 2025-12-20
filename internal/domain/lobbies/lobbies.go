@@ -1,4 +1,4 @@
-package lobby
+package lobbies
 
 import (
 	"github.com/google/uuid"
@@ -13,11 +13,12 @@ var (
 )
 
 type Lobby struct {
+	mu         sync.RWMutex
 	ID         uuid.UUID
 	StartTime  time.Time
 	LastActive time.Time
 	IsGame     bool
-	Players    *[]game.Player
+	Players    []game.Player
 	Game       *game.Game
 }
 
@@ -27,6 +28,7 @@ func NewLobby() *Lobby {
 		StartTime:  time.Now(),
 		LastActive: time.Now(),
 		IsGame:     false,
+		Players:    make([]game.Player, 0),
 	}
 
 	// Ensure only one routine updates lobby in-memory map at a time

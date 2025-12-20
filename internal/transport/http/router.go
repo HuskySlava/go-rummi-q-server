@@ -3,7 +3,7 @@ package transport
 import (
 	"encoding/json"
 	"fmt"
-	"go-rummi-q-server/internal/domain/lobby"
+	"go-rummi-q-server/internal/domain/lobbies"
 	"net/http"
 	"strings"
 )
@@ -19,7 +19,7 @@ func NewRouter() *http.ServeMux {
 
 	// Create new lobby
 	mux.HandleFunc("POST /lobbies", func(w http.ResponseWriter, r *http.Request) {
-		gameLobby := lobby.NewLobby()
+		gameLobby := lobbies.NewLobby()
 
 		resp := map[string]any{
 			"message": "Lobby Created",

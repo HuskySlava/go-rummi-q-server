@@ -11,16 +11,19 @@ import (
 func NewRouter() *http.ServeMux {
 	mux := http.NewServeMux()
 
+	// Test route
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		status, err := fmt.Fprint(w, "Welcome to Rummi-Q-Server")
 		fmt.Println("Status:", status, "Error", err)
 	})
 
-	mux.HandleFunc("POST /lobby", func(w http.ResponseWriter, r *http.Request) {
+	// Create new lobby
+	mux.HandleFunc("POST /lobbies", func(w http.ResponseWriter, r *http.Request) {
 		gameLobby := lobby.NewLobby()
 		fmt.Println(gameLobby)
 
 		resp := map[string]any{
+			"message": "Lobby Created",
 			"game_id": gameLobby.ID,
 		}
 
@@ -28,7 +31,8 @@ func NewRouter() *http.ServeMux {
 		json.NewEncoder(w).Encode(resp)
 	})
 
-	mux.HandleFunc("POST /lobby/", func(w http.ResponseWriter, r *http.Request) {
+	// Join existing lobby
+	mux.HandleFunc("POST /lobbies/", func(w http.ResponseWriter, r *http.Request) {
 
 		path := r.URL.Path
 		parts := strings.Split(path, "/")
@@ -37,6 +41,7 @@ func NewRouter() *http.ServeMux {
 			http.NotFound(w, r)
 			return
 		}
+		lobbyId := parts[2]
 
 		if r.Body == nil {
 			http.Error(w, "Request body required", http.StatusBadRequest)
@@ -58,6 +63,19 @@ func NewRouter() *http.ServeMux {
 			return
 		}
 
+		// Join logic
+
+		//
+
+		// Success
+		resp := map[string]string{
+			"message":     "Player joined game",
+			"player_name": req.PlayerName,
+			"lobby_id":    lobbyId,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
 	})
 
 	return mux

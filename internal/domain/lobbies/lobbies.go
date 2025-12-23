@@ -13,11 +13,20 @@ var (
 	lobbiesMu sync.RWMutex
 )
 
+type LobbyStatus int
+
+const (
+	AwaitingPlayers LobbyStatus = iota + 1
+	GameInProgress
+	GameEnded
+)
+
 type Lobby struct {
 	mu           sync.RWMutex
 	ID           uuid.UUID
 	StartTime    time.Time
 	LastActive   time.Time
+	Status       LobbyStatus
 	IsGame       bool
 	Players      []*game.Player
 	Game         *game.Game

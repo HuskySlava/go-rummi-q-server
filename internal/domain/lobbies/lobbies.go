@@ -91,6 +91,7 @@ func (l *Lobby) join(playerName string) {
 	if len(l.Players) > 1 {
 		l.Status = GameInProgress
 	}
+	l.LastActive = time.Now()
 }
 
 func JoinLobby(lobbyId uuid.UUID, playerName string) error {

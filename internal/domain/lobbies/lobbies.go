@@ -27,7 +27,6 @@ type Lobby struct {
 	StartTime    time.Time
 	LastActive   time.Time
 	Status       LobbyStatus
-	IsGame       bool
 	Players      []*game.Player
 	Game         *game.Game
 	NextPlayerID int
@@ -41,7 +40,6 @@ func NewLobby() *Lobby {
 		ID:           uuid.New(),
 		StartTime:    time.Now(),
 		LastActive:   time.Now(),
-		IsGame:       false,
 		Players:      make([]*game.Player, 0),
 		NextPlayerID: 1,
 	}

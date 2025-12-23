@@ -87,7 +87,7 @@ func (l *Lobby) join(playerName string) {
 	l.Players = append(l.Players, player)
 	l.NextPlayerID++
 
-	if player.ID > 1 {
+	if len(l.Players) > 1 {
 		l.Status = GameInProgress
 	}
 }

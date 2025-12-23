@@ -42,6 +42,7 @@ func NewLobby() *Lobby {
 		LastActive:   time.Now(),
 		Players:      make([]*game.Player, 0),
 		NextPlayerID: 1,
+		Status:       AwaitingPlayers,
 	}
 
 	// Ensure only one routine updates lobby in-memory map at a time

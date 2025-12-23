@@ -88,6 +88,10 @@ func (l *Lobby) join(playerName string) {
 	player := NewPlayer(l.NextPlayerID, playerName)
 	l.Players = append(l.Players, player)
 	l.NextPlayerID++
+
+	if player.ID > 1 {
+		l.Status = GameInProgress
+	}
 }
 
 func JoinLobby(lobbyId uuid.UUID, playerName string) error {

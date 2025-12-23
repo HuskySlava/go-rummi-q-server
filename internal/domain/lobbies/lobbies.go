@@ -1,6 +1,7 @@
 package lobbies
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"go-rummi-q-server/internal/domain/game"
 	"sync"
@@ -13,28 +14,31 @@ var (
 )
 
 type Lobby struct {
-	mu         sync.RWMutex
-	ID         uuid.UUID
-	StartTime  time.Time
-	LastActive time.Time
-	IsGame     bool
-	Players    []game.Player
-	Game       *game.Game
+	mu           sync.RWMutex
+	ID           uuid.UUID
+	StartTime    time.Time
+	LastActive   time.Time
+	IsGame       bool
+	Players      []*game.Player
+	Game         *game.Game
+	NextPlayerID int
 }
 
 func NewLobby() *Lobby {
+	lobbiesMu.Lock()
+	defer lobbiesMu.Unlock()
+
 	lobby := &Lobby{
-		ID:         uuid.New(),
-		StartTime:  time.Now(),
-		LastActive: time.Now(),
-		IsGame:     false,
-		Players:    make([]game.Player, 0),
+		ID:           uuid.New(),
+		StartTime:    time.Now(),
+		LastActive:   time.Now(),
+		IsGame:       false,
+		Players:      make([]*game.Player, 0),
+		NextPlayerID: 1,
 	}
 
 	// Ensure only one routine updates lobby in-memory map at a time
-	lobbiesMu.Lock()
 	lobbies[lobby.ID] = lobby
-	lobbiesMu.Unlock()
 
 	return lobby
 }
@@ -57,10 +61,10 @@ func TerminateLobby(id uuid.UUID) {
 	// TODO: Signal lobby is terminated
 }
 
-func NewPlayer() *game.Player {
+func NewPlayer(playerId int, playerName string) *game.Player {
 	return &game.Player{
-		ID:         0,
-		Name:       "",
+		ID:         playerId,
+		Name:       playerName,
 		WinAmount:  0,
 		LoseAmount: 0,
 		WinRate:    0,
@@ -68,6 +72,20 @@ func NewPlayer() *game.Player {
 	}
 }
 
-func PlayerJoin() {
+func PlayerJoin(lobbyId uuid.UUID, playerName string) error {
+	lobbiesMu.RLock() // Protect lobbies map
+	lobby, ok := lobbies[lobbyId]
+	lobbiesMu.RUnlock()
+	if !ok {
+		return fmt.Errorf("failed to join lobby")
+	}
 
+	lobby.mu.Lock() // Protect single lobby
+	defer lobby.mu.Unlock()
+
+	player := NewPlayer(lobby.NextPlayerID, playerName)
+	lobby.Players = append(lobby.Players, player)
+	lobby.NextPlayerID++
+
+	return nil
 }

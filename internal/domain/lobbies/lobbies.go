@@ -32,6 +32,8 @@ type Lobby struct {
 	NextPlayerID int
 }
 
+// ## Constructors ##
+
 func NewLobby() *Lobby {
 	lobbiesMu.Lock()
 	defer lobbiesMu.Unlock()
@@ -51,24 +53,6 @@ func NewLobby() *Lobby {
 	return lobby
 }
 
-func LobbyExists(id uuid.UUID) bool {
-	// Block writing to lobbies while you read from it
-	lobbiesMu.RLock()
-	defer lobbiesMu.RUnlock()
-
-	_, ok := lobbies[id]
-	return ok
-}
-
-func TerminateLobby(id uuid.UUID) {
-	// Block writing to lobbies while it is being deleted
-	lobbiesMu.Lock()
-	defer lobbiesMu.Unlock()
-	delete(lobbies, id)
-
-	// TODO: Signal lobby is terminated
-}
-
 func NewPlayer(playerId int, playerName string) *game.Player {
 	return &game.Player{
 		ID:         playerId,
@@ -79,6 +63,8 @@ func NewPlayer(playerId int, playerName string) *game.Player {
 		Hand:       nil,
 	}
 }
+
+// ## Methods ##
 
 func (l *Lobby) join(playerName string) {
 	l.mu.Lock()
@@ -94,6 +80,17 @@ func (l *Lobby) join(playerName string) {
 	l.LastActive = time.Now()
 }
 
+func LobbyExists(id uuid.UUID) bool {
+	// Block writing to lobbies while you read from it
+	lobbiesMu.RLock()
+	defer lobbiesMu.RUnlock()
+
+	_, ok := lobbies[id]
+	return ok
+}
+
+// ## Package-level helpers ##
+
 func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 	lobbiesMu.RLock() // Protect lobbies map
 	lobby, ok := lobbies[lobbyId]
@@ -103,4 +100,13 @@ func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 	}
 	lobby.join(playerName)
 	return nil
+}
+
+func TerminateLobby(id uuid.UUID) {
+	// Block writing to lobbies while it is being deleted
+	lobbiesMu.Lock()
+	defer lobbiesMu.Unlock()
+	delete(lobbies, id)
+
+	// TODO: Signal lobby is terminated
 }

@@ -3,6 +3,7 @@ package transport
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"go-rummi-q-server/internal/domain/lobbies"
 	"net/http"
 	"strings"
@@ -40,7 +41,11 @@ func NewRouter() *http.ServeMux {
 			http.NotFound(w, r)
 			return
 		}
-		lobbyId := parts[2]
+		lobbyId, err := uuid.Parse(parts[2])
+		if err != nil {
+			http.Error(w, "Invalid lobby ID", http.StatusBadRequest)
+			return
+		}
 
 		if r.Body == nil {
 			http.Error(w, "Request body required", http.StatusBadRequest)
@@ -51,7 +56,7 @@ func NewRouter() *http.ServeMux {
 			PlayerName string `json:"player_name"`
 		}
 
-		err := json.NewDecoder(r.Body).Decode(&req)
+		err = json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 			return
@@ -63,14 +68,16 @@ func NewRouter() *http.ServeMux {
 		}
 
 		// Join logic
-
-		//
+		if !lobbies.LobbyExists(lobbyId) {
+			http.Error(w, "Lobby not found", http.StatusNotFound)
+			return
+		}
 
 		// Success
 		resp := map[string]string{
 			"message":     "Player joined game",
 			"player_name": req.PlayerName,
-			"lobby_id":    lobbyId,
+			"lobby_id":    lobbyId.String(),
 		}
 
 		w.Header().Set("Content-Type", "application/json")

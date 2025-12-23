@@ -72,20 +72,22 @@ func NewPlayer(playerId int, playerName string) *game.Player {
 	}
 }
 
-func PlayerJoin(lobbyId uuid.UUID, playerName string) error {
+func (l *Lobby) join(playerName string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	player := NewPlayer(l.NextPlayerID, playerName)
+	l.Players = append(l.Players, player)
+	l.NextPlayerID++
+}
+
+func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 	lobbiesMu.RLock() // Protect lobbies map
 	lobby, ok := lobbies[lobbyId]
 	lobbiesMu.RUnlock()
 	if !ok {
 		return fmt.Errorf("failed to join lobby")
 	}
-
-	lobby.mu.Lock() // Protect single lobby
-	defer lobby.mu.Unlock()
-
-	player := NewPlayer(lobby.NextPlayerID, playerName)
-	lobby.Players = append(lobby.Players, player)
-	lobby.NextPlayerID++
-
+	lobby.join(playerName)
 	return nil
 }

@@ -1,5 +1,7 @@
 package game
 
+import "go-rummi-q-server/internal/domain/lobbies"
+
 type Player struct {
 	ID         int
 	Name       string
@@ -11,17 +13,16 @@ type Player struct {
 
 type Game struct {
 	GameID     int
-	Players    []Player
 	TilePool   []Tile
 	Board      []Meld
-	PlayerTurn Player
-	PlayerWon  Player
+	PlayerTurn *Player
+	PlayerWon  *Player
 }
 
 // ## Methods ##
 
 func (g *Game) NewGame() {
-	// Generate tiles
+	g.TilePool = generateTilePool()
 }
 
 func (g *Game) NextTurn() {

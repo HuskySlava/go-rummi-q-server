@@ -35,11 +35,15 @@ func NewGame(players []Player) (*Game, error) {
 	}
 
 	g.GameID = uuid.New()
+
+	// Generate and shuffle tiles
 	g.TilePool = generateTilePool()
 	g.shuffleTiles()
+
 	g.Board = make([]Meld, 0)
 	g.Players = players
 
+	// Set initial player turn
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	firstPlayerIndex := r.Intn(len(g.Players))
 	g.PlayerTurn = &g.Players[firstPlayerIndex]

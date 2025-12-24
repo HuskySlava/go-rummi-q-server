@@ -17,12 +17,12 @@ type Player struct {
 }
 
 type Game struct {
-	GameID     uuid.UUID
-	TilePool   []Tile
-	Board      []Meld
-	Players    []Player
-	PlayerTurn *Player
-	PlayerWon  *Player
+	GameID          uuid.UUID
+	TilePool        []Tile
+	Board           []Meld
+	Players         []Player
+	PlayerTurnIndex int
+	PlayerWon       *Player
 }
 
 func NewGame(players []Player) (*Game, error) {
@@ -45,14 +45,20 @@ func NewGame(players []Player) (*Game, error) {
 
 	// Set initial player turn
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	firstPlayerIndex := r.Intn(len(g.Players))
-	g.PlayerTurn = &g.Players[firstPlayerIndex]
+	g.PlayerTurnIndex = r.Intn(len(g.Players))
 
 	return g, nil
 }
 
 func (g *Game) NextTurn() {
-	// TODO
+	if len(g.Players) == 0 {
+		return
+	}
+	if g.PlayerTurnIndex+1 >= len(g.Players) {
+		g.PlayerTurnIndex = 0
+	} else {
+		g.PlayerTurnIndex++
+	}
 }
 
 // ## helpers ##

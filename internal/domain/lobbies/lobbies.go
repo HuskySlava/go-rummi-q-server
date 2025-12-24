@@ -27,7 +27,7 @@ type Lobby struct {
 	StartTime    time.Time
 	LastActive   time.Time
 	Status       LobbyStatus
-	Players      []*game.Player
+	Players      []game.Player
 	Game         *game.Game
 	NextPlayerID int
 }
@@ -42,7 +42,7 @@ func NewLobby() *Lobby {
 		ID:           uuid.New(),
 		StartTime:    time.Now(),
 		LastActive:   time.Now(),
-		Players:      make([]*game.Player, 0),
+		Players:      make([]game.Player, 0),
 		NextPlayerID: 1,
 		Status:       AwaitingPlayers,
 	}
@@ -66,18 +66,25 @@ func NewPlayer(playerId int, playerName string) *game.Player {
 
 // ## Methods ##
 
-func (l *Lobby) join(playerName string) {
+func (l *Lobby) join(playerName string) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
 	player := NewPlayer(l.NextPlayerID, playerName)
-	l.Players = append(l.Players, player)
+	l.Players = append(l.Players, *player)
 	l.NextPlayerID++
 
 	if len(l.Players) > 1 {
+		var err error
+		l.Game, err = game.NewGame(l.Players)
+		if err != nil {
+			return err
+		}
 		l.Status = GameInProgress
 	}
 	l.LastActive = time.Now()
+
+	return nil
 }
 
 // ## helpers ##
@@ -95,10 +102,16 @@ func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 	lobbiesMu.RLock() // Protect lobbies map
 	lobby, ok := lobbies[lobbyId]
 	lobbiesMu.RUnlock()
+	
 	if !ok {
 		return fmt.Errorf("failed to join lobby")
 	}
-	lobby.join(playerName)
+
+	err := lobby.join(playerName)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

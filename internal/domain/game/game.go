@@ -1,6 +1,11 @@
 package game
 
-import "go-rummi-q-server/internal/domain/lobbies"
+import (
+	"fmt"
+	"github.com/google/uuid"
+	"math/rand"
+	"time"
+)
 
 type Player struct {
 	ID         int
@@ -12,17 +17,33 @@ type Player struct {
 }
 
 type Game struct {
-	GameID     int
+	GameID     uuid.UUID
 	TilePool   []Tile
 	Board      []Meld
+	Players    []Player
 	PlayerTurn *Player
 	PlayerWon  *Player
 }
 
-// ## Methods ##
+func NewGame(players []Player) (*Game, error) {
 
-func (g *Game) NewGame() {
+	var g = &Game{}
+
+	if len(players) == 0 {
+		err := fmt.Errorf("cannot start game without players")
+		return nil, err
+	}
+
+	g.GameID = uuid.New()
 	g.TilePool = generateTilePool()
+	g.Board = make([]Meld, 0)
+	g.Players = players
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	firstPlayerIndex := r.Intn(len(g.Players))
+	g.PlayerTurn = &g.Players[firstPlayerIndex]
+
+	return g, nil
 }
 
 func (g *Game) NextTurn() {

@@ -80,6 +80,8 @@ func (l *Lobby) join(playerName string) {
 	l.LastActive = time.Now()
 }
 
+// ## helpers ##
+
 func LobbyExists(id uuid.UUID) bool {
 	// Block writing to lobbies while you read from it
 	lobbiesMu.RLock()
@@ -88,8 +90,6 @@ func LobbyExists(id uuid.UUID) bool {
 	_, ok := lobbies[id]
 	return ok
 }
-
-// ## Package-level helpers ##
 
 func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 	lobbiesMu.RLock() // Protect lobbies map

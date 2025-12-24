@@ -36,6 +36,7 @@ func NewGame(players []Player) (*Game, error) {
 
 	g.GameID = uuid.New()
 	g.TilePool = generateTilePool()
+	g.shuffleTiles()
 	g.Board = make([]Meld, 0)
 	g.Players = players
 
@@ -100,4 +101,11 @@ func generateTilePool() []Tile {
 	}
 
 	return tiles
+}
+
+func (g *Game) shuffleTiles() {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r.Shuffle(len(g.TilePool), func(i, j int) {
+		g.TilePool[i], g.TilePool[j] = g.TilePool[j], g.TilePool[i]
+	})
 }

@@ -119,3 +119,18 @@ func (g *Game) shuffleTiles() {
 		g.TilePool[i], g.TilePool[j] = g.TilePool[j], g.TilePool[i]
 	})
 }
+
+func (g *Game) dealTiles() {
+	const initialTilesPerPlayer = 14
+	playersAmount := len(g.Players)
+
+	for i := 0; i < playersAmount; i++ {
+		start := i * initialTilesPerPlayer
+		end := start + initialTilesPerPlayer
+		playerTiles := []Meld{g.TilePool[start:end]}
+		g.Players[i].Hand = append([]Meld{}, playerTiles...)
+	}
+
+	// Remove from the pool
+	g.TilePool = g.TilePool[playersAmount*initialTilesPerPlayer:]
+}

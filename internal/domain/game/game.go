@@ -43,6 +43,8 @@ func NewGame(players []Player) (*Game, error) {
 	g.Board = make([]Meld, 0)
 	g.Players = players
 
+	g.dealTiles()
+
 	// Set initial player turn
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	g.PlayerTurnIndex = r.Intn(len(g.Players))

@@ -17,6 +17,7 @@ type LobbyStatus int
 
 const (
 	AwaitingPlayers LobbyStatus = iota + 1
+	ReadyToStart
 	GameInProgress
 	GameEnded
 )
@@ -74,13 +75,14 @@ func (l *Lobby) join(playerName string) error {
 	l.Players = append(l.Players, *player)
 	l.NextPlayerID++
 
+	// More than 1 player joined, game is ready to start
 	if len(l.Players) > 1 {
 		var err error
 		l.Game, err = game.NewGame(l.Players)
 		if err != nil {
 			return err
 		}
-		l.Status = GameInProgress
+		l.Status = ReadyToStart
 	}
 	l.LastActive = time.Now()
 
@@ -102,7 +104,7 @@ func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 	lobbiesMu.RLock() // Protect lobbies map
 	lobby, ok := lobbies[lobbyId]
 	lobbiesMu.RUnlock()
-	
+
 	if !ok {
 		return fmt.Errorf("failed to join lobby")
 	}

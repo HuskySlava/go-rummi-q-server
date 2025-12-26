@@ -10,6 +10,7 @@ import (
 type Player struct {
 	ID         int
 	Name       string
+	Ready      bool
 	WinAmount  int
 	LoseAmount int
 	WinRate    float32

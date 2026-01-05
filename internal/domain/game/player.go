@@ -66,3 +66,14 @@ func validateRawPlayerID(rawPlayerId string) error {
 
 	return nil
 }
+
+func ConvertRawPlayerID(rawPlayerID string) (PlayerID, error) {
+	var id PlayerID
+
+	if err := validateRawPlayerID(rawPlayerID); err != nil {
+		return id, err
+	}
+
+	copy(id[:], rawPlayerID)
+	return id, nil
+}

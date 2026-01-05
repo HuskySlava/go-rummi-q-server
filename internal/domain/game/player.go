@@ -14,8 +14,10 @@ type Player struct {
 	Hand       []Meld
 }
 
+var Players map[PlayerID]*Player
+
 func NewPlayer(playerID PlayerID, playerName string) *Player {
-	return &Player{
+	player := &Player{
 		ID:         playerID,
 		Name:       playerName,
 		WinAmount:  0,
@@ -23,6 +25,8 @@ func NewPlayer(playerID PlayerID, playerName string) *Player {
 		WinRate:    0,
 		Hand:       nil,
 	}
+	Players[player.ID] = player
+	return player
 }
 
 func GeneratePlayerId() (PlayerID, error) {

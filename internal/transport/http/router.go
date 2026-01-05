@@ -37,6 +37,7 @@ func joinLobby(w http.ResponseWriter, r *http.Request, lobbyID uuid.UUID) {
 
 	var req struct {
 		PlayerName string `json:"player_name"`
+		PlayerID   string `json:"player_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -52,6 +53,11 @@ func joinLobby(w http.ResponseWriter, r *http.Request, lobbyID uuid.UUID) {
 	if !lobbies.LobbyExists(lobbyID) {
 		http.Error(w, "Lobby not found", http.StatusNotFound)
 		return
+	}
+
+	err := lobbies.JoinLobby(lobbyID, req.PlayerID, req.PlayerName)
+	if err != nil {
+		http.Error(w, "Unable to join lobby", http.StatusBadRequest)
 	}
 
 	resp := map[string]string{

@@ -36,6 +36,8 @@ type Lobby struct {
 // ## Constructors ##
 
 func NewLobby() *Lobby {
+	// Ensure only one routine updates lobby in-memory map at a time
+
 	lobbiesMu.Lock()
 	defer lobbiesMu.Unlock()
 
@@ -48,7 +50,6 @@ func NewLobby() *Lobby {
 		Status:       AwaitingPlayers,
 	}
 
-	// Ensure only one routine updates lobby in-memory map at a time
 	lobbies[lobby.ID] = lobby
 
 	return lobby
@@ -56,11 +57,16 @@ func NewLobby() *Lobby {
 
 // ## Methods ##
 
-func (l *Lobby) join(playerName string) error {
+func (l *Lobby) join(playerName string, rawPlayerID string) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	player := game.NewPlayer(l.NextPlayerID, playerName)
+	playerId, err := game.ConvertRawPlayerID(rawPlayerID)
+	if err != nil {
+		return err
+	}
+
+	player := game.NewPlayer(playerId, playerName)
 	l.Players = append(l.Players, *player)
 	l.NextPlayerID++
 
@@ -89,7 +95,7 @@ func LobbyExists(id uuid.UUID) bool {
 	return ok
 }
 
-func JoinLobby(lobbyId uuid.UUID, playerName string) error {
+func JoinLobby(lobbyId uuid.UUID, playerID string, playerName string) error {
 	lobbiesMu.RLock() // Protect lobbies map
 	lobby, ok := lobbies[lobbyId]
 	lobbiesMu.RUnlock()
@@ -98,7 +104,7 @@ func JoinLobby(lobbyId uuid.UUID, playerName string) error {
 		return fmt.Errorf("failed to join lobby")
 	}
 
-	err := lobby.join(playerName)
+	err := lobby.join(playerName, playerID)
 	if err != nil {
 		return err
 	}

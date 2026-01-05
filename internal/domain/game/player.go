@@ -34,14 +34,14 @@ func NewPlayer(playerID PlayerID, playerName string) *Player {
 		WinAmount:  0,
 		LoseAmount: 0,
 		WinRate:    0,
-		Hand:       nil,
+		Hand:       []Meld{},
 	}
 	Players[player.ID] = player
 
 	return player
 }
 
-func GeneratePlayerId() (PlayerID, error) {
+func GeneratePlayerID() (PlayerID, error) {
 	const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var id PlayerID
 

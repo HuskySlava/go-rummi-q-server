@@ -20,16 +20,16 @@ type Player struct {
 }
 
 var (
-	Players   = make(map[PlayerID]*Player)
-	PlayersMu sync.RWMutex
+	players   = make(map[PlayerID]*Player)
+	playersMu sync.RWMutex
 )
 
 const playerIDCharset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 func NewPlayer(playerID PlayerID, playerName string) *Player {
 	// Ensure only one routine updates player in-memory map at a time
-	PlayersMu.Lock()
-	defer PlayersMu.Unlock()
+	playersMu.Lock()
+	defer playersMu.Unlock()
 
 	player := &Player{
 		ID:         playerID,
@@ -39,9 +39,17 @@ func NewPlayer(playerID PlayerID, playerName string) *Player {
 		WinRate:    0,
 		Hand:       []Meld{},
 	}
-	Players[player.ID] = player
+	players[player.ID] = player
 
 	return player
+}
+
+func GetPlayer(playerID PlayerID) (*Player, error) {
+	player, ok := players[playerID]
+	if !ok {
+		return nil, fmt.Errorf("player %v not found", playerID)
+	}
+	return player, nil
 }
 
 func GeneratePlayerID() (PlayerID, error) {

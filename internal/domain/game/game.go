@@ -7,16 +7,6 @@ import (
 	"time"
 )
 
-type Player struct {
-	ID         int
-	Name       string
-	Ready      bool
-	WinAmount  int
-	LoseAmount int
-	WinRate    float32
-	Hand       []Meld
-}
-
 type Game struct {
 	GameID          uuid.UUID
 	TilePool        []Tile

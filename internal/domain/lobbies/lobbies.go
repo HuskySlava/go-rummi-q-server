@@ -54,24 +54,13 @@ func NewLobby() *Lobby {
 	return lobby
 }
 
-func NewPlayer(playerId int, playerName string) *game.Player {
-	return &game.Player{
-		ID:         playerId,
-		Name:       playerName,
-		WinAmount:  0,
-		LoseAmount: 0,
-		WinRate:    0,
-		Hand:       nil,
-	}
-}
-
 // ## Methods ##
 
 func (l *Lobby) join(playerName string) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	player := NewPlayer(l.NextPlayerID, playerName)
+	player := game.NewPlayer(l.NextPlayerID, playerName)
 	l.Players = append(l.Players, *player)
 	l.NextPlayerID++
 

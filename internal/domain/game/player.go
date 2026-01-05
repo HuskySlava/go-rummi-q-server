@@ -14,9 +14,9 @@ type Player struct {
 	Hand       []Meld
 }
 
-func NewPlayer(playerId PlayerID, playerName string) *Player {
+func NewPlayer(playerID PlayerID, playerName string) *Player {
 	return &Player{
-		ID:         playerId,
+		ID:         playerID,
 		Name:       playerName,
 		WinAmount:  0,
 		LoseAmount: 0,

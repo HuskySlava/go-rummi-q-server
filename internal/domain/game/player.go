@@ -3,6 +3,7 @@ package game
 import (
 	"crypto/rand"
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -23,6 +24,8 @@ var (
 	PlayersMu sync.RWMutex
 )
 
+const playerIDCharset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
 func NewPlayer(playerID PlayerID, playerName string) *Player {
 	// Ensure only one routine updates player in-memory map at a time
 	PlayersMu.Lock()
@@ -42,7 +45,6 @@ func NewPlayer(playerID PlayerID, playerName string) *Player {
 }
 
 func GeneratePlayerID() (PlayerID, error) {
-	const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var id PlayerID
 
 	randomBytes := make([]byte, 8)
@@ -51,7 +53,7 @@ func GeneratePlayerID() (PlayerID, error) {
 	}
 
 	for i, b := range randomBytes {
-		id[i] = charset[b%byte(len(charset))]
+		id[i] = playerIDCharset[b%byte(len(playerIDCharset))]
 	}
 
 	return id, nil
@@ -62,6 +64,12 @@ func validateRawPlayerID(rawPlayerId string) error {
 
 	if len(rawPlayerId) != len(id) {
 		return fmt.Errorf("invalid player_id")
+	}
+
+	for _, c := range rawPlayerId {
+		if !strings.ContainsRune(playerIDCharset, c) {
+			return fmt.Errorf("invalid player_id character: %q", c)
+		}
 	}
 
 	return nil

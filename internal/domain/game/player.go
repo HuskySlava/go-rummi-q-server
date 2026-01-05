@@ -2,6 +2,7 @@ package game
 
 import (
 	"crypto/rand"
+	"fmt"
 	"sync"
 )
 
@@ -54,4 +55,14 @@ func GeneratePlayerId() (PlayerID, error) {
 	}
 
 	return id, nil
+}
+
+func validateRawPlayerID(rawPlayerId string) error {
+	var id PlayerID
+
+	if len(rawPlayerId) != len(id) {
+		return fmt.Errorf("invalid player_id")
+	}
+
+	return nil
 }

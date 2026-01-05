@@ -51,7 +51,7 @@ func GeneratePlayerId() (PlayerID, error) {
 	}
 
 	for i, b := range randomBytes {
-		id[i] = charset[b%64]
+		id[i] = charset[b%byte(len(charset))]
 	}
 
 	return id, nil

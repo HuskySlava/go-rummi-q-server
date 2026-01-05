@@ -19,7 +19,7 @@ type Player struct {
 }
 
 var (
-	Players   map[PlayerID]*Player
+	Players   = make(map[PlayerID]*Player)
 	PlayersMu sync.RWMutex
 )
 

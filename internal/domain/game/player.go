@@ -1,6 +1,9 @@
 package game
 
-import "crypto/rand"
+import (
+	"crypto/rand"
+	"sync"
+)
 
 type PlayerID [8]byte
 
@@ -14,9 +17,16 @@ type Player struct {
 	Hand       []Meld
 }
 
-var Players map[PlayerID]*Player
+var (
+	Players   map[PlayerID]*Player
+	PlayersMu sync.RWMutex
+)
 
 func NewPlayer(playerID PlayerID, playerName string) *Player {
+	// Ensure only one routine updates player in-memory map at a time
+	PlayersMu.Lock()
+	defer PlayersMu.Unlock()
+
 	player := &Player{
 		ID:         playerID,
 		Name:       playerName,
@@ -26,6 +36,7 @@ func NewPlayer(playerID PlayerID, playerName string) *Player {
 		Hand:       nil,
 	}
 	Players[player.ID] = player
+
 	return player
 }
 

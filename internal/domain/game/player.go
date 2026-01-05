@@ -60,9 +60,8 @@ func GeneratePlayerID() (PlayerID, error) {
 }
 
 func validateRawPlayerID(rawPlayerId string) error {
-	var id PlayerID
 
-	if len(rawPlayerId) != len(id) {
+	if len(rawPlayerId) != len(PlayerID{}) {
 		return fmt.Errorf("invalid player_id")
 	}
 

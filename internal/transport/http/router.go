@@ -115,7 +115,8 @@ func newPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Test method, should be restricted or removed later
+// getAllPlayers is a temporary HTTP handler for debugging.
+// TODO: restrict or remove before release.
 func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 	path := strings.Trim(r.URL.Path, "/")
 	urlParts := strings.Split(path, "/")

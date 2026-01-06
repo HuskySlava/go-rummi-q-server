@@ -26,7 +26,7 @@ var (
 
 const playerIDCharset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-func NewPlayer(playerID PlayerID, playerName string) *Player {
+func AddPlayer(playerID PlayerID, playerName string) *Player {
 	// Ensure only one routine updates player in-memory map at a time
 	playersMu.Lock()
 	defer playersMu.Unlock()

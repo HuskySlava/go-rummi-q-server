@@ -97,7 +97,7 @@ func newPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	game.NewPlayer(id, req.PlayerName)
+	game.AddPlayer(id, req.PlayerName)
 
 	resp := map[string]string{
 		"message":     "New player created",

@@ -121,6 +121,8 @@ func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 	path := strings.Trim(r.URL.Path, "/")
 	urlParts := strings.Split(path, "/")
 
+	w.Header().Set("Content-Type", "application/json")
+
 	// Expecting: /players
 	if len(urlParts) != 1 || urlParts[0] != "players" {
 		http.NotFound(w, r)
@@ -132,7 +134,6 @@ func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.Write(resp)
 }
 

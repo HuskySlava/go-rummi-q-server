@@ -130,6 +130,7 @@ func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 	resp, err := game.GetAllPlayersJSON()
 	if err != nil {
 		http.Error(w, "Failed to get player list: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

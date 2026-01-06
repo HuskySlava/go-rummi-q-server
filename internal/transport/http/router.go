@@ -27,6 +27,8 @@ func createLobby(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
@@ -113,14 +115,35 @@ func newPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Test method, should be restricted or removed later
+func getAllPlayers(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	path := strings.Trim(r.URL.Path, "/")
+	urlParts := strings.Split(path, "/")
+
+	// Expecting: /players
+	if len(urlParts) != 1 || urlParts[0] != "players" {
+		http.NotFound(w, r)
+		return
+	}
+	resp, err := game.GetAllPlayersJSON()
+	if err != nil {
+		http.Error(w, "Failed to get player list: "+err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resp)
+}
+
 // ## Router handlers ##
 
 func NewRouter() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /", defaultRoute)
 	mux.HandleFunc("POST /lobbies", createLobby)
 	mux.HandleFunc("POST /player", newPlayer)
+	mux.HandleFunc("GET /players", getAllPlayers)
 	// Lobby actions
 	mux.HandleFunc("POST /lobbies/", func(w http.ResponseWriter, r *http.Request) {
 
@@ -148,6 +171,8 @@ func NewRouter() *http.ServeMux {
 		}
 
 	})
+
+	mux.HandleFunc("GET /", defaultRoute)
 
 	return mux
 }

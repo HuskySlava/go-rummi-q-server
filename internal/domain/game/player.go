@@ -2,6 +2,7 @@ package game
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -42,6 +43,26 @@ func AddPlayer(playerID PlayerID, playerName string) *Player {
 	players[player.ID] = player
 
 	return player
+}
+
+func GetAllPlayersJSON() ([]byte, error) {
+	playersMu.RLock()
+	defer playersMu.RUnlock()
+
+	var result []map[string]string
+
+	for k, v := range players {
+		result = append(result, map[string]string{
+			"id":    string(k[:]),
+			"value": v.Name,
+		})
+	}
+
+	data := map[string]interface{}{
+		"players": result,
+	}
+
+	return json.MarshalIndent(data, "", "  ")
 }
 
 func GetPlayer(playerID PlayerID) (*Player, error) {

@@ -117,8 +117,6 @@ func newPlayer(w http.ResponseWriter, r *http.Request) {
 
 // Test method, should be restricted or removed later
 func getAllPlayers(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
 	path := strings.Trim(r.URL.Path, "/")
 	urlParts := strings.Split(path, "/")
 

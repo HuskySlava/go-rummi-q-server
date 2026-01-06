@@ -68,7 +68,7 @@ func (l *Lobby) join(playerName string, rawPlayerID string) error {
 
 	player, err := game.GetPlayer(playerId)
 	if err != nil {
-		player = game.NewPlayer(playerId, playerName)
+		player = game.AddPlayer(playerId, playerName)
 	}
 
 	l.Players = append(l.Players, *player)

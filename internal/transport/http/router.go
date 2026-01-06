@@ -120,6 +120,7 @@ func NewRouter() *http.ServeMux {
 
 	mux.HandleFunc("GET /", defaultRoute)
 	mux.HandleFunc("POST /lobbies", createLobby)
+	mux.HandleFunc("POST /player", newPlayer)
 	// Lobby actions
 	mux.HandleFunc("POST /lobbies/", func(w http.ResponseWriter, r *http.Request) {
 

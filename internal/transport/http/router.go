@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"go-rummi-q-server/internal/domain/game"
 	"go-rummi-q-server/internal/domain/lobbies"
 	"log"
 	"net/http"
@@ -64,6 +65,44 @@ func joinLobby(w http.ResponseWriter, r *http.Request, lobbyID uuid.UUID) {
 		"message":     "Player joined game",
 		"player_name": req.PlayerName,
 		"lobby_id":    lobbyID.String(),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func newPlayer(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var req struct {
+		PlayerName string `json:"player_name"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.PlayerName == "" {
+		http.Error(w, "`player_name` is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := game.GeneratePlayerID()
+	if err != nil {
+		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	game.NewPlayer(id, req.PlayerName)
+
+	resp := map[string]string{
+		"message":     "New player created",
+		"player_name": req.PlayerName,
+		"player_id":   string(id[:]),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

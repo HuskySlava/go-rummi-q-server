@@ -93,7 +93,7 @@ func newPlayer(w http.ResponseWriter, r *http.Request) {
 
 	id, err := game.GeneratePlayerID()
 	if err != nil {
-		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Failed to generate player ID: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

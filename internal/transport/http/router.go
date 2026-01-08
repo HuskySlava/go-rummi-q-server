@@ -99,6 +99,7 @@ func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(resp)
 	WriteResponse(w, http.StatusOK, resp)
 }
 

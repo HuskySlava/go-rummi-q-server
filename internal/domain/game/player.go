@@ -76,7 +76,7 @@ func GetPlayer(playerID PlayerID) (*Player, error) {
 func GeneratePlayerID() (PlayerID, error) {
 	var id PlayerID
 
-	randomBytes := make([]byte, 8)
+	randomBytes := make([]byte, len(id))
 	if _, err := rand.Read(randomBytes); err != nil {
 		return id, err
 	}

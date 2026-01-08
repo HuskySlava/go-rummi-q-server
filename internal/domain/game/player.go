@@ -49,13 +49,15 @@ type PlayerInfo struct {
 	Value string `json:"value"`
 }
 
-type PlayersInfo map[string][]PlayerInfo
+type PlayersInfo struct {
+	Players []PlayerInfo `json:"players"`
+}
 
 func GetAllPlayersJSON() (PlayersInfo, error) {
 	playersMu.RLock()
 	defer playersMu.RUnlock()
 
-	result := []PlayerInfo{}
+	var result []PlayerInfo
 
 	for k, v := range players {
 		result = append(result, PlayerInfo{

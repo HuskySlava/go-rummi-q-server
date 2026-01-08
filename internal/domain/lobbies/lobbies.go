@@ -116,11 +116,18 @@ func JoinLobby(lobbyId uuid.UUID, playerID string, playerName string) error {
 	return nil
 }
 
-func TerminateLobby(id uuid.UUID) {
-	// Block writing to lobbies while it is being deleted
+func TerminateLobby(id uuid.UUID) error {
 	lobbiesMu.Lock()
 	defer lobbiesMu.Unlock()
-	delete(lobbies, id)
 
-	// TODO: Signal lobby is terminated
+	lobby, ok := lobbies[id]
+	if !ok {
+		return fmt.Errorf("lobby not found")
+	}
+
+	if lobby.Game != nil {
+		lobby.Game.End()
+	}
+	delete(lobbies, id)
+	return nil
 }

@@ -99,7 +99,7 @@ func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(resp)
+	WriteResponse(w, http.StatusOK, resp)
 }
 
 // ## Router handlers ##
@@ -118,13 +118,13 @@ func NewRouter() *http.ServeMux {
 
 		// Expecting: /lobbies/{id}/join
 		if len(urlParts) != 3 || urlParts[0] != "lobbies" {
-			http.NotFound(w, r)
+			WriteError(w, http.StatusNotFound, "Lobby not found")
 			return
 		}
 
 		lobbyID, err := uuid.Parse(urlParts[1])
 		if err != nil {
-			http.Error(w, "Invalid lobby ID", http.StatusBadRequest)
+			WriteError(w, http.StatusBadRequest, "Invalid lobby ID")
 			return
 		}
 
@@ -133,7 +133,7 @@ func NewRouter() *http.ServeMux {
 		case "join":
 			joinLobby(w, r, lobbyID)
 		default:
-			http.NotFound(w, r)
+			WriteError(w, http.StatusNotImplemented, "Lobby action not implemented")
 		}
 
 	})

@@ -188,3 +188,8 @@ func writeResponse(w http.ResponseWriter, status int, data any) {
 func writeError(w http.ResponseWriter, status int, message string) {
 	writeResponse(w, status, map[string]string{"error": message})
 }
+
+func decodeJSON(r *http.Request, dest any) error {
+	defer r.Body.Close()
+	return json.NewDecoder(r.Body).Decode(dest)
+}

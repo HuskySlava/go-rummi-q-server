@@ -120,14 +120,11 @@ func TerminateLobby(id uuid.UUID) error {
 	lobbiesMu.Lock()
 	defer lobbiesMu.Unlock()
 
-	lobby, ok := lobbies[id]
+	_, ok := lobbies[id]
 	if !ok {
 		return fmt.Errorf("lobby not found")
 	}
 
-	if lobby.Game != nil {
-		lobby.Game.End()
-	}
 	delete(lobbies, id)
 	return nil
 }

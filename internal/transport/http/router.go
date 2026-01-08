@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"go-rummi-q-server/internal/domain/game"
@@ -11,8 +10,6 @@ import (
 	"strings"
 )
 
-// ## Route actions ##
-
 func defaultRoute(w http.ResponseWriter, _ *http.Request) {
 	status, err := fmt.Fprint(w, "Welcome to Rummi-Q-Server")
 	log.Printf("Status: %d, Error: %v \n", status, err)
@@ -20,7 +17,7 @@ func defaultRoute(w http.ResponseWriter, _ *http.Request) {
 
 func createLobby(w http.ResponseWriter, _ *http.Request) {
 	gameLobby := lobbies.NewLobby()
-	writeResponse(w, http.StatusCreated, map[string]any{
+	WriteResponse(w, http.StatusCreated, map[string]any{
 		"message": "Lobby Created",
 		"game_id": gameLobby.ID,
 	})
@@ -32,24 +29,24 @@ func joinLobby(w http.ResponseWriter, r *http.Request, lobbyID uuid.UUID) {
 		PlayerID   string `json:"player_id"`
 	}
 
-	if err := decodeJSON(r, &req); err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid JSON: "+err.Error())
+	if err := DecodeJSON(r, &req); err != nil {
+		WriteError(w, http.StatusBadRequest, "Invalid JSON: "+err.Error())
 		return
 	}
 	if req.PlayerName == "" {
-		writeError(w, http.StatusBadRequest, "`player_name` is required")
+		WriteError(w, http.StatusBadRequest, "`player_name` is required")
 		return
 	}
 	if !lobbies.LobbyExists(lobbyID) {
-		writeError(w, http.StatusNotFound, "Lobby not found")
+		WriteError(w, http.StatusNotFound, "Lobby not found")
 		return
 	}
 	if err := lobbies.JoinLobby(lobbyID, req.PlayerID, req.PlayerName); err != nil {
-		writeError(w, http.StatusBadRequest, "Unable to join lobby: "+err.Error())
+		WriteError(w, http.StatusBadRequest, "Unable to join lobby: "+err.Error())
 		return
 	}
 
-	writeResponse(w, http.StatusOK, map[string]any{
+	WriteResponse(w, http.StatusOK, map[string]any{
 		"message":     "Player joined game",
 		"player_name": req.PlayerName,
 		"lobby_id":    lobbyID.String(),
@@ -60,23 +57,23 @@ func newPlayer(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		PlayerName string `json:"player_name"`
 	}
-	if err := decodeJSON(r, &req); err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid JSON: "+err.Error())
+	if err := DecodeJSON(r, &req); err != nil {
+		WriteError(w, http.StatusBadRequest, "Invalid JSON: "+err.Error())
 		return
 	}
 	if req.PlayerName == "" {
-		writeError(w, http.StatusBadRequest, "`player_name` is required")
+		WriteError(w, http.StatusBadRequest, "`player_name` is required")
 		return
 	}
 
 	id, err := game.GeneratePlayerID()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to generate player ID: "+err.Error())
+		WriteError(w, http.StatusInternalServerError, "Failed to generate player ID: "+err.Error())
 		return
 	}
 	game.AddPlayer(id, req.PlayerName)
 
-	writeResponse(w, http.StatusCreated, map[string]any{
+	WriteResponse(w, http.StatusCreated, map[string]any{
 		"message":     "New player created",
 		"player_name": req.PlayerName,
 		"player_id":   string(id[:]),
@@ -144,21 +141,4 @@ func NewRouter() *http.ServeMux {
 	mux.HandleFunc("GET /", defaultRoute)
 
 	return mux
-}
-
-func writeResponse(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func writeError(w http.ResponseWriter, status int, message string) {
-	writeResponse(w, status, map[string]string{"error": message})
-}
-
-func decodeJSON(r *http.Request, dest any) error {
-	defer r.Body.Close()
-	return json.NewDecoder(r.Body).Decode(dest)
 }

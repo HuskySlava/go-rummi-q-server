@@ -184,3 +184,7 @@ func writeResponse(w http.ResponseWriter, status int, data any) {
 		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
 	}
 }
+
+func writeError(w http.ResponseWriter, status int, message string) {
+	writeResponse(w, status, map[string]string{"error": message})
+}

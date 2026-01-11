@@ -1,9 +1,7 @@
-package storage
+package redis
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 )
 
@@ -32,11 +30,9 @@ func Init() error {
 
 	if os.Getenv("APP_ENV") == "development" {
 		if err := godotenv.Load(); err != nil {
-			log.Println("No .env file found — using system vars")
+			return err
 		}
 	}
-
-	fmt.Println("Test")
-
+	
 	return nil
 }

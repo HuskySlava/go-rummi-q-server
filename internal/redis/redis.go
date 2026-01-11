@@ -1,13 +1,18 @@
 package redis
 
 import (
+	"context"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 	"os"
 	"strconv"
 )
 
-var client *redis.Client
+var (
+	client *redis.Client
+	ctx    = context.Background()
+)
 
 type config struct {
 	addr     string
@@ -53,6 +58,10 @@ func Init() error {
 		Password: cfg.password,
 		DB:       cfg.db,
 	})
+
+	if err := client.Ping(ctx).Err(); err != nil {
+		return fmt.Errorf("failed to connect to redis: %w", err)
+	}
 
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"os"
 	"strconv"
+	"time"
 )
 
 var (
@@ -64,4 +65,13 @@ func Init() error {
 	}
 
 	return nil
+}
+
+// Set - ttl should be 0 for no expiration
+func Set(key string, value interface{}, ttl time.Duration) error {
+	return client.Set(ctx, key, value, ttl).Err()
+}
+
+func Get(key string) (string, error) {
+	return client.Get(ctx, key).Result()
 }

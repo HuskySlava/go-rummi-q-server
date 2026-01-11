@@ -1,0 +1,42 @@
+package storage
+
+import (
+	"fmt"
+	"github.com/joho/godotenv"
+	"log"
+	"os"
+)
+
+type config struct {
+	addr     string
+	password string
+	db       string
+}
+
+func getEnv(key, def string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return def
+}
+
+func loadConfig() config {
+	return config{
+		addr:     getEnv("REDIS_ADDR", "localhost:6379"),
+		password: getEnv("REDIS_PASSWORD", ""),
+		db:       getEnv("REDIS_DB", "0"),
+	}
+}
+
+func Init() error {
+
+	if os.Getenv("APP_ENV") == "development" {
+		if err := godotenv.Load(); err != nil {
+			log.Println("No .env file found — using system vars")
+		}
+	}
+
+	fmt.Println("Test")
+
+	return nil
+}
